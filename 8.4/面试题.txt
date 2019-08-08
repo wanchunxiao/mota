@@ -1,0 +1,75 @@
+function	Person()
+	{			
+        	this.name	=	1;		
+    		return	{}; 
+    } 
+var	person	=	new	Person();
+console.log('name:',	person.name);
+答案：
+    name：undefined
+    new 一个新对象时，执行对象里的代码此时返回了一个空对象，无name属性
+function	Person()	{	
+    			this.name	=	1;
+                
+}
+Person.prototype	=	{	
+    			show:function	()	{	
+                    console.log('name	is:',	this.name);	
+                    }
+}; 
+var	person	=	new	Person();
+person.show();
+答案： name is：1
+创建了一个person对象，拥有Person的属性name和方法 show，person.show()this指向person
+function	Person()	{	
+    			this.name	=	1; 
+}
+Person.prototype	=	{	
+    			name:	2,	
+                show:	function	()	{								
+                    console.log('name	is:',	this.name);				
+                    } 
+            };
+ var	person	=	new	Person();
+Person.prototype.show	=	function	()	{	
+    			console.log('new	show');
+ };
+person.show();
+答案：new show
+show方法定义了两次，第二次覆盖了第一次的
+function	Person()	{				
+    this.name	=	1; 
+} 
+Person.prototype	=	{				
+    name:	2,				
+    show:	function	()	{								
+        console.log('name	is:',	this.name);				
+        } 
+}; 
+var	person	=	new	Person(); 
+var	person2	=	new	Person();
+person.show	=	function	()	{				
+    console.log('new	show'); 
+};
+person2.show(); 
+person.show();
+答案：name is ： 1
+    new show
+peron的show方法是直接在person本身定义的
+person2的show方法是通过原型链的方式在Person的prototype找到的
+function	Person()	{				
+    this.name	=	1; 
+    }
+Person.prototype	=	{		
+    name:	2,
+    show:	function	()	{								
+        console.log('name	is:',	this.name);				
+        } 
+};
+Person.prototype.show();
+(new	Person()).show();
+
+答案 name is:2
+name is
+Person.prototype.show();this指向Person.prototype
+(new	Person()).show();this指向new 出来的对象

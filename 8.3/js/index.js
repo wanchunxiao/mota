@@ -119,48 +119,28 @@
 				)
 			}
 		}
-		function Hero(){
-			this.img = heroImg,
-			this.context = context,
-			this.imgPos = {
+
+		var hero = {
+			img: heroImg,
+			context: context,
+			imgPos: {
 				x: 0,
 				y: 0,
 				width: 32,
 				height: 32
-			}
-			this.rect = {
+			},
+
+			rect: {
 				x: 0,
 				y: 0,
 				width: 40,
 				height: 40
-			}
-		}
-	Hero.prototype.draw=draw;
-	Hero.prototype.move=move;
-	Hero.prototype.clear=clear;
-	var hero= new hero();
-	function Monster(){
-		this.img = allSpriteImg,
-		this.context = context,
-		this.imgPos = {
-			x: 0,
-			y: 0,
-			width: 32,
-			height: 32
-		}
-		this.rect = {
-			x: 0,
-			y: 0,
-			width: 40,
-			height: 40
-		}
-		}
-		Monster.prototype.draw=draw;
-		function blankMonster(){
-			Monster.call(this)
-		}
-		blankMonster.prototype= Object.create(Monster.prototype);
-		var blankMonster1 =new  blankMonster();
+			},
+
+			draw: draw,
+			move: move,
+			clear:clear
+		};
 
 		var monster = {
 			img: allSpriteImg,
@@ -197,3 +177,13 @@
 	
 
 })();
+function ss(a){
+	console.log(a)
+	var a='sss'
+}
+ss('ddd')
+var obj={
+	a:'www',
+	a:'ddddd'
+}
+console.log(obj.a)

@@ -31,8 +31,8 @@
 		};
 	}
 	function drawHero(context, heroImg, allSpriteImg) {
-
 		var draw = function () {
+			console.log(this)
 			this.context
 				.drawImage(
 					this.img,
@@ -45,10 +45,12 @@
 					this.rect.width,
 					this.rect.height
 				);
+				this.bloodBox.style.left=`${this.rect.x}px`;
+				this.bloodBox.style.top=`${this.rect.y+60}px`;
+				this.bloodBox.innerHTML=`血量:${this.blood}`;
 		}
 		// 	清除图像
 		var clear = function (){
-			
 			this.context
 					.clearRect(
 						this.rect.x,
@@ -58,21 +60,32 @@
 					)
 		}
 		//英雄移动
-		var move=function(){
+		var move=function(monster){
 			let that=this;
 			document.onkeyup=(event)=>{
 				var e=event||window.event;
 				that.clear()
-				let distanceX=that.rect.x-monster.rect.x;
-				let distanceY=that.rect.y-monster.rect.y;
-				let absdistanceX=Math.abs(that.rect.x-monster.rect.x);
-				let absdistanceY=Math.abs(that.rect.y-monster.rect.y);
-				let borderflag=absdistanceX <= 40 && absdistanceY <= 40;//英雄与怪物是否接触
+				
+				if(monster.blood!==0){
+					var distanceX=that.rect.x-monster.rect.x;
+					var distanceY=that.rect.y-monster.rect.y;
+					var absdistanceX=Math.abs(that.rect.x-monster.rect.x);
+					var absdistanceY=Math.abs(that.rect.y-monster.rect.y);
+					var borderflag=absdistanceX <= 40 && absdistanceY <= 40;//英
+				}else{
+					var borderflag=false//英
+					var distanceX=0;
+					var distanceY=0
+				}
+				//英雄与怪物是否接触
 				// 左上右下37 38 39 40
 				let moveaction={
 					39:function(){
 						if(that.rect.x>=460||(borderflag && distanceX < 40 && absdistanceY<40)){
-							return
+							if(that.rect.x>=460){
+								return
+							}
+							that.attaccked(monster)
 						}else{
 							that.rect.x+=10
 						}
@@ -80,7 +93,10 @@
 					},
 					37:function(){
 						if(that.rect.x<=0||(borderflag && distanceX >-40 && absdistanceY<40)){
-							return
+							if(that.rect.x<=0){
+								return
+							}
+							that.attaccked(monster)
 						}else{
 							that.rect.x-=10
 						}
@@ -88,7 +104,10 @@
 					},
 					38:function(){
 						if(that.rect.y<=0||(borderflag && distanceY >-40 && absdistanceX<40)){
-							return
+							if(that.rect.y<=0){
+								return
+							}
+							that.attaccked(monster)
 						}else{
 							that.rect.y-=10
 						}
@@ -96,7 +115,10 @@
 					},
 					40:function(){
 						if(that.rect.y>=260||(borderflag && distanceY < 40 && absdistanceX<40)){
-							return
+							if(that.rect.y>=260){
+								return
+							}
+							that.attaccked(monster)
 						}else{
 							that.rect.y+=10
 						}
@@ -104,24 +126,31 @@
 					},
 				}
 				moveaction[e.keyCode]()
-				console.log(that.rect);
-				that.context
-				.drawImage(
-					that.img,
-					that.imgPos.x,
-					that.imgPos.y,
-					that.imgPos.width,
-					that.imgPos.height,
-					that.rect.x,
-					that.rect.y,
-					that.rect.width,
-					that.rect.height
-				)
+				that.draw();
+				
 			}
 		}
+		var attaccked=function(monster){
+			this.blood-=50;
+			monster.blood-=100;
+			if(monster.blood==0){
+				monster.clear();
+				document.body.removeChild(monster.bloodBox);
+				monster=null;
+				return
+			}
+			if(this.blood<=0){
+				alert('game over')
+			}
+			this.draw();
+			monster.draw()
+	
+		}
+		// 英雄类
 		function Hero(){
-			this.img = heroImg,
-			this.context = context,
+			this.img = heroImg;
+			this.context = context;
+			this.blood=5000;
 			this.imgPos = {
 				x: 0,
 				y: 0,
@@ -133,67 +162,65 @@
 				y: 0,
 				width: 40,
 				height: 40
-			}
+			};
+		
 		}
-	Hero.prototype.draw=draw;
-	Hero.prototype.move=move;
-	Hero.prototype.clear=clear;
-	var hero= new hero();
-	function Monster(){
-		this.img = allSpriteImg,
-		this.context = context,
-		this.imgPos = {
-			x: 0,
-			y: 0,
-			width: 32,
-			height: 32
-		}
-		this.rect = {
-			x: 0,
-			y: 0,
-			width: 40,
-			height: 40
-		}
-		}
-		Monster.prototype.draw=draw;
-		function blankMonster(){
-			Monster.call(this)
-		}
-		blankMonster.prototype= Object.create(Monster.prototype);
-		var blankMonster1 =new  blankMonster();
-
-		var monster = {
-			img: allSpriteImg,
-			context: context,
-			imgPos: {
+		Hero.prototype={
+			draw:draw,
+			move:move,
+			clear:clear,
+			createBloodBox:createBloodBox,
+			attaccked:attaccked
+		};
+		function Monster(){
+			this.img = allSpriteImg;
+			this.context = context;
+			this.blood=200,
+			this.imgPos = {
 				x: 858,
 				y: 529,
 				width: 32,
 				height: 32
-			},
-
-			rect: {
-				x: 100,
-				y: 100,
+			}
+			this.rect = {
+				x: 200,
+				y:200,
 				width: 40,
 				height: 40
-			},
-
-			draw: draw,
-			move: move,
-			clear:clear
+			}
+		}
+		Monster.prototype={
+			draw:draw,
+			clear:clear,
+			createBloodBox:createBloodBox
 		};
-
+		function blankMonster(){
+			Monster.call(this)
+		}
+		function createBloodBox(){
+			var bloodBox=document.createElement('div');
+			bloodBox.style.position='absolute';
+			bloodBox.style.left=`${this.rect.x}px`;
+			bloodBox.style.top=`${this.rect.y+60}px`;
+			bloodBox.innerHTML=`血量:${this.blood}`;
+			bloodBox.style.fontSize="12px";
+			bloodBox.style.color='red';
+			document.body.appendChild(bloodBox);
+			return bloodBox;
+		}
+		blankMonster.prototype= Object.create(Monster.prototype);
+		var blankMonster1 =new  blankMonster();
+		var hero= new Hero();
+		hero.bloodBox=hero.createBloodBox()
 		hero.draw();
-		monster.draw();
-		hero.move()
+		blankMonster1.bloodBox=blankMonster1.createBloodBox();
+		blankMonster1.draw();
+		hero.move(blankMonster1);
+	
 	}
-
 	var resourceManager = prepare();
-
 	resourceManager.getResource(function (context, heroImg, allSpriteImg) {
 		drawHero(context, heroImg, allSpriteImg);
 	});
 	
-
 })();
